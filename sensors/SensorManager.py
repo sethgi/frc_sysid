@@ -10,6 +10,6 @@ class SensorManager(ABC):
     def register_measurement(self):
         return NotImplemented
     
-    @abstractmethod
-    def build_factors(self):
-        return NotImplemented
+    # @abstractmethod
+    # def build_factors(self):
+    #     return NotImplemented

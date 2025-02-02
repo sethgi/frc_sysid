@@ -7,10 +7,10 @@ class IMUMeasurement:
     time: float
     acceleration: np.ndarray  # 3D acceleration vector
     gyroscope: np.ndarray     # 3D angular velocity vector
-    magnetometer: np.ndarray  # 3D magnetic field vector
 
 class IMUManager(SensorManager):
-    def __init__(self):
+    def __init__(self, *args):
+        super().__init__(*args)
         self.measurements = []
     
     def register_measurement(self, time: float, acceleration: np.ndarray, gyroscope: np.ndarray):

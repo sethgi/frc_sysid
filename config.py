@@ -31,9 +31,10 @@ class FieldConfig:
 
 class RobotConfig:
     def __init__(self):
-        self.wheel_base_x: float = None
-        self.wheel_base_y: float = None
-        self.wheel_radius: float = None
+        self.wheel_base_x: float = 18.75 * 0.0254
+        self.wheel_base_y: float = 22.75 * 0.0254
+        self.wheel_radius: float = 2.003 * 0.0254
+        self.drive_base_radius: float = 14.942 * 0.0254
         self.sensors: Dict[str, np.ndarray] = {}
     
     def add_sensor_transform(self, sensor_name: str, transform: np.ndarray):

@@ -282,9 +282,10 @@ if __name__ == "__main__":
             if record.isStart():
                 try:
                     data = record.getStartData()
-                    print(
-                        f"Start({data.entry}, name='{data.name}', type='{data.type}', metadata='{data.metadata}') [{timestamp}]"
-                    )
+                    if "rawfiducials" in data.name:
+                        print(
+                            f"Start({data.entry}, name='{data.name}', type='{data.type}', metadata='{data.metadata}') [{timestamp}]"
+                        )
                     if data.entry in entries:
                         print("...DUPLICATE entry ID, overriding")
                     entries[data.entry] = data
@@ -303,7 +304,7 @@ if __name__ == "__main__":
             elif record.isSetMetadata():
                 try:
                     data = record.getSetMetadataData()
-                    print(f"SetMetadata({data.entry}, '{data.metadata}') [{timestamp}]")
+                    # print(f"SetMetadata({data.entry}, '{data.metadata}') [{timestamp}]")
                     if data.entry not in entries:
                         print("...ID not found")
                 except TypeError:
@@ -311,44 +312,45 @@ if __name__ == "__main__":
             elif record.isControl():
                 print("Unrecognized control record")
             else:
-                print(f"Data({record.entry}, size={len(record.data)}) ", end="")
                 entry = entries.get(record.entry)
-                if entry is None:
-                    print("<ID not found>")
-                    continue
-                print(f"<name='{entry.name}', type='{entry.type}'> [{timestamp}]")
-
-                try:
-                    # handle systemTime specially
-                    if entry.name == "systemTime" and entry.type == "int64":
-                        dt = datetime.fromtimestamp(record.getInteger() / 1000000)
-                        print("  {:%Y-%m-%d %H:%M:%S.%f}".format(dt))
+                if "rawfiducials" in entry.name:
+                    print(f"Data({record.entry}, size={len(record.data)}) ", end="")
+                    if entry is None:
+                        print("<ID not found>")
                         continue
+                    print(f"<name='{entry.name}', type='{entry.type}'> [{timestamp}]")
+                    breakpoint()
+                    try:
+                        # handle systemTime specially
+                        if entry.name == "systemTime" and entry.type == "int64":
+                            dt = datetime.fromtimestamp(record.getInteger() / 1000000)
+                            print("  {:%Y-%m-%d %H:%M:%S.%f}".format(dt))
+                            continue
 
-                    if entry.type == "double":
-                        print(f"  {record.getDouble()}")
-                    elif entry.type == "int64":
-                        print(f"  {record.getInteger()}")
-                    elif entry.type in ("string", "json"):
-                        print(f"  '{record.getString()}'")
-                    elif entry.type == "msgpack":
-                        print(f"  '{record.getMsgPack()}'")
-                    elif entry.type == "boolean":
-                        print(f"  {record.getBoolean()}")
-                    elif entry.type == "boolean[]":
-                        arr = record.getBooleanArray()
-                        print(f"  {arr}")
-                    elif entry.type == "double[]":
-                        arr = record.getDoubleArray()
-                        print(f"  {arr}")
-                    elif entry.type == "float[]":
-                        arr = record.getFloatArray()
-                        print(f"  {arr}")
-                    elif entry.type == "int64[]":
-                        arr = record.getIntegerArray()
-                        print(f"  {arr}")
-                    elif entry.type == "string[]":
-                        arr = record.getStringArray()
-                        print(f"  {arr}")
-                except TypeError:
-                    print("  invalid")
+                        if entry.type == "double":
+                            print(f"  {record.getDouble()}")
+                        elif entry.type == "int64":
+                            print(f"  {record.getInteger()}")
+                        elif entry.type in ("string", "json"):
+                            print(f"  '{record.getString()}'")
+                        elif entry.type == "msgpack":
+                            print(f"  '{record.getMsgPack()}'")
+                        elif entry.type == "boolean":
+                            print(f"  {record.getBoolean()}")
+                        elif entry.type == "boolean[]":
+                            arr = record.getBooleanArray()
+                            print(f"  {arr}")
+                        elif entry.type == "double[]":
+                            arr = record.getDoubleArray()
+                            print(f"  {arr}")
+                        elif entry.type == "float[]":
+                            arr = record.getFloatArray()
+                            print(f"  {arr}")
+                        elif entry.type == "int64[]":
+                            arr = record.getIntegerArray()
+                            print(f"  {arr}")
+                        elif entry.type == "string[]":
+                            arr = record.getStringArray()
+                            print(f"  {arr}")
+                    except TypeError:
+                        print("  invalid")
