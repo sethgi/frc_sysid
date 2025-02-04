@@ -68,35 +68,10 @@ Eigen::Matrix4d AprilTagManager::Exp(const Eigen::VectorXd &pose_vec)
     return res;
 }
 
-// Get a matrix stacking the translation (x, y, z) of each measurement in world frame.
-// Eigen::MatrixXd AprilTagManager::getTranslations() const {
-//     auto world_measurements = getMeasurementsCameraFrame();
-//     int n = static_cast<int>(world_measurements.size());
-//     Eigen::MatrixXd translations(n, 3);
-//     for (int i = 0; i < n; i++) {
-//         translations.row(i) = world_measurements[i].transform.block<3,1>(0,3).transpose();
-//     }
-//     return translations;
-// }
-
-
 // Return measurements transformed into the world frame.
 std::vector<Measurement> AprilTagManager::getMeasurementsCameraFrame() const {
     return measurements;
 }
-
-// Return measurements transformed into the robot frame.
-// std::vector<Measurement> AprilTagManager::getMeasurementsRobotFrame() const {
-//     std::vector<Measurement> result;
-//     for (const auto &m : measurements) {
-//         Measurement out;
-//         out.time = m.time;
-//         out.tag_id = m.tag_id;
-//         out.transform = m.transform.inverse();
-//         result.push_back(out);
-//     }
-//     return result;
-// }
 
 
 }

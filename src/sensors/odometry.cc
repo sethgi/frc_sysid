@@ -65,9 +65,6 @@ void SwerveOdometryManager::fitSpline() {
             double wheel_y = wheel_base_y/2 * ((i % 2 == 0) ? 1 : -1);
             double wheel_x = wheel_base_x/2 * ((i < 2) ? 1 : -1);
 
-            // std::cout << "Wheel: " << (wheel_x > 0 ? "F" : "B") <<(wheel_y > 0 ? "L" : "R")
-            //           << ": " << wheel_x << "," << wheel_y << std::endl;
-          
             sum_omega += (wheel_x * std::cos(angle) - wheel_y * std::sin(angle)) * distance 
                        / (wheel_base_x * wheel_base_x + wheel_base_y * wheel_base_y);
 

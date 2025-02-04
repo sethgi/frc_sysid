@@ -35,11 +35,6 @@ void run(const std::string &csv_directory) {
 
   // Retrieve odometry trajectory (sampled as a 500x2 matrix) and AprilTag translations.
   auto odom = problem.getOdometryManager().pollSplines(500);
-  // Eigen::MatrixXd tags = problem.getAprilTagManager().getTranslations();
-
-  // Assume tags is an N x 3 matrix and we want the first two columns.
-  // Eigen::MatrixXd apriltags = tags.block(0, 0, tags.rows(), 2);
-
 
   // Create and set up the GTSAM optimizer.
   GTSAMOptimizer optimizer(problem, 500);

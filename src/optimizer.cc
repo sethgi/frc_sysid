@@ -40,8 +40,6 @@ std::vector<double> linspace(double start, double end, size_t num) {
 GTSAMOptimizer::GTSAMOptimizer(SysIdProblem &problem, size_t N_pose_intervals)
   : problem_(problem), N_pose_intervals(N_pose_intervals), T_robot_limelight()
 {
-  // Here we assume that problem_.getOdometryManager().getMeasurements() returns a
-  // vector of odometry measurements sorted by time, and that each measurement has a "time" field.
   const auto &odomMeas = problem_.getOdometryManager().getMeasurements();
   if (odomMeas.empty()) {
     throw std::runtime_error("No odometry measurements available.");
@@ -49,8 +47,6 @@ GTSAMOptimizer::GTSAMOptimizer(SysIdProblem &problem, size_t N_pose_intervals)
   start_time = odomMeas.front().time;
   end_time = odomMeas.back().time;
 
-  // Create noise models.
-  // Here we set all six sigmas to 0.1.
   Vector sigmas = (Vector(6) << 0.1, 0.1, 0.1, 0.1, 0.1, 0.1).finished();
   auto base_odom_noise = noiseModel::Diagonal::Sigmas(sigmas);
 
@@ -65,7 +61,6 @@ GTSAMOptimizer::GTSAMOptimizer(SysIdProblem &problem, size_t N_pose_intervals)
   apriltag_noise = noiseModel::Robust::Create(noiseModel::mEstimator::Huber::Create(1.345), base_apriltag_noise);
 
   T_robot_limelight_sym = T(0);
-
 }
 
 
@@ -81,7 +76,6 @@ NodeInfo* GTSAMOptimizer::getClosestNode(const double target_time)
                                return node.time < t;
                              });
 
-  // Handle edge cases
   if (it == nodes_.begin()) return &(*it);                   // target_time is before all nodes
   if (it == nodes_.end()) return &nodes_.back();              // target_time is after all nodes
 
