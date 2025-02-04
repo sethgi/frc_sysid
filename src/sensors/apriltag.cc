@@ -32,7 +32,7 @@ void AprilTagManager::registerMeasurement(double time, int tag_id, const Eigen::
     if(tag_id < 0) return;
 
     const double azimuth = -meas_vec(0);
-    const double elevation = -meas_vec(1);
+    const double elevation = meas_vec(1);
     const double range = meas_vec(3);
 
     double azimuth_rad = deg2rad(azimuth);

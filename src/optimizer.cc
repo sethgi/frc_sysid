@@ -50,7 +50,7 @@ GTSAMOptimizer::GTSAMOptimizer(SysIdProblem &problem, size_t N_pose_intervals)
   Vector sigmas = (Vector(6) << 0.1, 0.1, 0.1, 0.1, 0.1, 0.1).finished();
   auto base_odom_noise = noiseModel::Diagonal::Sigmas(sigmas);
 
-  Vector april_sigmas = (Vector(3) << 0.25,0.25,0.25).finished();
+  Vector april_sigmas = (Vector(3) << 0.05,0.05,0.05).finished();
   auto base_apriltag_noise = noiseModel::Diagonal::Sigmas(april_sigmas);
 
   Vector t_rob_cam_sigmas = (Vector(6) << 0.1, 0.1, 0.1, 0.1, 0.1, 0.01).finished();
@@ -121,7 +121,7 @@ void GTSAMOptimizer::setupOptimizer() {
 
   for(const auto t : timesteps) {
     const NodeInfo* closest_existing_node = getClosestNode(t);
-    if(std::fabs(closest_existing_node->time - t) > (end_time - start_time) * N_pose_intervals / 2)
+    if(std::fabs(closest_existing_node->time - t) > (end_time - start_time) / (N_pose_intervals / 2))
     {
       NodeInfo new_node;
       new_node.time = t;
@@ -164,7 +164,7 @@ void GTSAMOptimizer::setupOptimizer() {
 
     Eigen::VectorXd flat_sigmas(6);
 
-    flat_sigmas << 1e6, 1e6, 1e-3, 1e6, 1e6, 1e6; // Constrain z, roll, pitch tightly, leave x, y, yaw unconstrained
+    flat_sigmas << 1e-3, 1e-3, 1e6, 1e6, 1e6, 1e-3;
     auto flat_noise = gtsam::noiseModel::Diagonal::Sigmas(flat_sigmas);
 
 
@@ -219,7 +219,7 @@ void GTSAMOptimizer::setupOptimizer() {
               node.cam_pose_symbol, t_world_tag_syms.at(tag_id), bearing, range, apriltag_noise));
     }
   }
-  graph.print("Graph: \n");
+  // graph.print("Graph: \n");
 
 }
 
@@ -228,7 +228,7 @@ void GTSAMOptimizer::setupOptimizer() {
 Values GTSAMOptimizer::optimize() {
   LevenbergMarquardtParams params;
   params.verbosity = LevenbergMarquardtParams::Verbosity::ERROR;
-  params.maxIterations = 1000;
+  params.maxIterations = 100;
 
   LevenbergMarquardtOptimizer optimizer(graph, initial_estimate, params);
 

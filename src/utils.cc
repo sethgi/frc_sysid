@@ -1,5 +1,8 @@
 #include "utils.hh"
 
+#include <Eigen/Dense>
+#include <gtsam/geometry/Pose3.h>
+
 namespace frc_sysid {
 
 std::vector<std::vector<double>> load_csv(const std::string &filename)
@@ -28,6 +31,31 @@ std::vector<std::vector<double>> load_csv(const std::string &filename)
     data.push_back(row);
   }
   return data;
+}
+
+void printPose(const Eigen::Matrix4d& T, const std::string& name)
+{
+  Eigen::Vector3d translation = T.block<3,1>(0,3);
+  Eigen::Matrix3d rotation = T.block<3,3>(0,0);
+  Eigen::Vector3d euler_angles = rotation.eulerAngles(2, 1, 0); // ZYX convention: yaw, pitch, roll
+
+  
+  std::cout << name << ": " << std::endl;
+  std::cout << "          Position (x, y, z): " << translation.transpose() << std::endl;
+  std::cout << "          Euler angles (ypr, deg): " << rad2deg(euler_angles).transpose() << std::endl;
+}
+
+void printPose(const gtsam::Pose3& P, const std::string& name)
+{
+  const Eigen::Matrix4d T = P.matrix();
+  Eigen::Vector3d translation = T.block<3,1>(0,3);
+  Eigen::Matrix3d rotation = T.block<3,3>(0,0);
+  Eigen::Vector3d euler_angles = rotation.eulerAngles(2, 1, 0); // ZYX convention: yaw, pitch, roll
+
+  
+  std::cout << name << ": " << std::endl;
+  std::cout << "          Position (x, y, z): " << translation.transpose() << std::endl;
+  std::cout << "          Euler angles (ypr, deg): " << rad2deg(euler_angles).transpose() << std::endl;
 }
 
 }

@@ -12,6 +12,7 @@ namespace plt = matplotlibcpp;
 
 using namespace frc_sysid;
 
+
 void run(const std::string &csv_directory) {
   plt::backend("TkAgg");
 
@@ -20,12 +21,11 @@ void run(const std::string &csv_directory) {
   RobotConfig robot_config;  // Populate as needed (e.g., set wheel_radius, wheel_base_x, etc.).
 
   Eigen::Matrix4d T_rob_cam = Eigen::Matrix4d::Identity();
-  const Eigen::Matrix3d R_world_robot = Eigen::AngleAxisd(-deg2rad(15), Eigen::Vector3d::UnitY()).toRotationMatrix();
+  const Eigen::Matrix3d R_world_robot = Eigen::AngleAxisd(-deg2rad(30.), Eigen::Vector3d::UnitY()).toRotationMatrix();
   T_rob_cam.block<3,3>(0,0) = R_world_robot;
   T_rob_cam(0,3) = 0.381;
   T_rob_cam(2,3) = 0.305;
-  robot_config.T_robot_camera = T_rob_cam;
-  
+  robot_config.T_robot_camera = T_rob_cam;  
 
   // Create the system identification problem.
   SysIdProblem problem(robot_config, field_config);
@@ -37,7 +37,7 @@ void run(const std::string &csv_directory) {
   auto odom = problem.getOdometryManager().pollSplines(500);
 
   // Create and set up the GTSAM optimizer.
-  GTSAMOptimizer optimizer(problem, 500);
+  GTSAMOptimizer optimizer(problem, 20000);
   optimizer.setupOptimizer();
   
   // Run the optimizer.
@@ -138,13 +138,9 @@ void run(const std::string &csv_directory) {
 
   Eigen::Matrix4d T_robot_cam = optimizer.getRobotToLimelight();
 
-  Eigen::Vector3d translation = T_robot_cam.block<3,1>(0,3);
-  Eigen::Matrix3d rotation = T_robot_cam.block<3,3>(0,0);
-  Eigen::Vector3d euler_angles = rotation.eulerAngles(2, 1, 0); // ZYX convention: yaw, pitch, roll
+  printPose(robot_config.T_robot_camera, "Initial T_robot_cam");
+  printPose(T_robot_cam, "Optimized T_robot_cam");
 
-  std::cout << "T_robot_to_limelight: " << std::endl;
-  std::cout << "          Position (x, y, z): " << translation.transpose() << std::endl;
-  std::cout << "          Euler angles (ypr, deg): " << rad2deg(euler_angles).transpose() << std::endl;
 }
 
 int main(int argc, char **argv) {

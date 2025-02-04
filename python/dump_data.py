@@ -33,6 +33,7 @@ def load_data(log_path: str, time_limit: float = None):
     pos_FL, pos_FR, pos_BL, pos_BR = [],[],[],[]
     
     botposes = []
+    fiducials = []
 
     with open(log_path, "r") as f:
         mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
@@ -148,6 +149,8 @@ def load_data(log_path: str, time_limit: float = None):
                         
                     elif entry.name == 'NT:/limelight/botpose':
                         botposes.append((timestamp, data))
+                    elif entry.name == 'NT:/limelight/rawfiducials':
+                        fiducials.append((timestamp, data))
                         
                     if prev_len != len(pos_FL) and entry.name != "FL position":
                         breakpoint()
@@ -161,9 +164,11 @@ def load_data(log_path: str, time_limit: float = None):
     encoders = collate((enc_FL, enc_FR, enc_BL, enc_BR, pos_FL, pos_FR, pos_BL, pos_BR))
     tags = collate((target_x, target_y, target_z, target_roll, target_pitch, target_yaw))
     
-    botposes = [b for b in botposes if b[0] < time_limit]
-    
-    return IMU, encoders, tags, botposes
+    if time_limit is not None:
+        botposes = [b for b in botposes if b[0] < time_limit]
+        fiducials = [b for b in fiducials if b[0] < time_limit]
+
+    return IMU, encoders, tags, botposes, fiducials
     
 
 def dump_data_to_csv(log_file, out_dir, time_limit: float = None):
@@ -211,7 +216,7 @@ def dump_data_to_csv(log_file, out_dir, time_limit: float = None):
                 writer.writerow([t] + list(data[:len(header)-1]))
                 
     
-    print("CSV files dumped: imu.csv, encoders.csv, botposes.csv, and tags.csv")
+    print("CSV files dumped: imu.csv, encoders.csv, botposes.csv, and fiducials.csv")
 
 if __name__ == "__main__":
     import argparse

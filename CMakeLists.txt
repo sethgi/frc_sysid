@@ -13,8 +13,7 @@ find_package(Eigen3 REQUIRED)
 find_package(GTSAM REQUIRED)
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 message(STATUS "GTSAM package found at: ${GTSAM_DIR}")
-
-
+find_package(Python3 COMPONENTS NumPy)
 
 include_directories(${EIGEN3_INCLUDE_DIRS})
 include_directories(${GTSAM_INCLUDE_DIRS})
@@ -30,9 +29,21 @@ file(GLOB_RECURSE HEADER_FILES
 
 add_executable(sysid_app ${SRC_FILES} ${HEADER_FILES})
 
-target_link_libraries(sysid_app
+if(Python3_NumPy_FOUND)
+  target_link_libraries(sysid_app INTERFACE
+    Python3::NumPy
+  )
+else()
+  target_compile_definitions(sysid_app INTERFACE WITHOUT_NUMPY)
+endif()
+
+
+target_link_libraries(sysid_app PRIVATE
   gtsam
   Python3::Python
 )
 
-target_include_directories(sysid_app PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(sysid_app PRIVATE 
+  ${PROJECT_SOURCE_DIR}/include)
+
+
