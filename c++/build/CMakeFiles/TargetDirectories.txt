@@ -1,3 +1,0 @@
-/home/sethgi/Documents/frc_sysid/c++/build/CMakeFiles/sysid_app.dir
-/home/sethgi/Documents/frc_sysid/c++/build/CMakeFiles/edit_cache.dir
-/home/sethgi/Documents/frc_sysid/c++/build/CMakeFiles/rebuild_cache.dir
